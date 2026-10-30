@@ -1,11 +1,9 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
 import type { NextRequest } from "next/server";
 import { desc } from "drizzle-orm";
 import sharp from "sharp";
 import { db, schema as s } from "@/db";
 import { handle, HttpError, json, requireAdmin } from "@/lib/api";
-import { ALLOWED, UPLOAD_DIR } from "@/lib/storage";
+import { ALLOWED, saveUpload } from "@/lib/storage";
 
 export const GET = handle(async (req: NextRequest) => {
   await requireAdmin(req);
@@ -44,11 +42,10 @@ export const POST = handle(async (req: NextRequest) => {
     const now = new Date();
     const dir = [String(now.getFullYear()), String(now.getMonth() + 1).padStart(2, "0")];
     const name = `${crypto.randomUUID().slice(0, 12)}.${rule.ext}`;
-    await mkdir(path.join(/* turbopackIgnore: true */ UPLOAD_DIR, ...dir), { recursive: true });
-    await writeFile(path.join(/* turbopackIgnore: true */ UPLOAD_DIR, ...dir, name), buf);
+    const url = await saveUpload([...dir, name], buf, file.type);
     const [row] = await db
       .insert(s.media)
-      .values({ url: `/uploads/${dir.join("/")}/${name}`, filename: file.name.slice(0, 200), mime: file.type, size: file.size, width, height, alt })
+      .values({ url, filename: file.name.slice(0, 200), mime: file.type, size: file.size, width, height, alt })
       .returning();
     saved.push(row);
   }

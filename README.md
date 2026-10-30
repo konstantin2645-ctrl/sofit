@@ -46,6 +46,10 @@ npm run dev                 # http://localhost:3000
 
 Продакшн-сборка: `npm run build && npm start`. Сборка пререндерит страницы из базы, поэтому база должна быть доступна во время `build`.
 
+## Запуск на Render + Supabase
+
+В репозитории есть `render.yaml`. Сайт собирается командой `npm ci && npm run db:migrate && npm run db:seed && npm run build` и запускается через `npm start`. База — Postgres в Supabase: подключение идёт через пулер в режиме session (порт 5432), TLS включается автоматически. Загруженные файлы хранятся в базе (`STORAGE_DRIVER=db`), потому что диск на Render временный.
+
 ## Переменные окружения
 
 | Переменная | Назначение |
@@ -55,6 +59,8 @@ npm run dev                 # http://localhost:3000
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Первый администратор, создаётся командой `npm run db:seed` |
 | `NEXT_PUBLIC_SITE_URL` | Боевой адрес сайта: canonical, sitemap, Open Graph |
 | `UPLOAD_DIR` | Папка для загруженных файлов (по умолчанию `./storage/uploads`) |
+| `STORAGE_DRIVER` | `disk` (по умолчанию) или `db` — хранить загрузки в базе |
+| `DB_SSL` | `true` / `false` — принудительно включить или выключить TLS к базе |
 | `INSECURE_COOKIES` | Только для запуска без HTTPS: разрешает cookie сессии по http |
 
 ## Команды

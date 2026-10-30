@@ -1,5 +1,6 @@
 import {
   boolean,
+  customType,
   doublePrecision,
   index,
   integer,
@@ -11,6 +12,8 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
 
 export const gelEnum = pgEnum("gel", [
   "tungsten",
@@ -164,6 +167,14 @@ export const orders = pgTable("orders", {
   phone: text("phone").notNull().default(""),
   status: orderStatusEnum("status").notNull().default("reserved"),
   ...timestamps,
+});
+
+/** File bodies when STORAGE_DRIVER=db (hosts without a persistent disk). */
+export const mediaBlobs = pgTable("media_blobs", {
+  path: text("path").primaryKey(),
+  mime: text("mime").notNull(),
+  data: bytea("data").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const settings = pgTable("settings", {

@@ -1,0 +1,25 @@
+# Render Blueprint: one Node web service. The database is external (Supabase or any Postgres).
+services:
+  - type: web
+    name: sofit
+    runtime: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm ci && npm run db:migrate && npm run db:seed && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        sync: false
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@sofit.live
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+      - key: STORAGE_DRIVER
+        value: db
