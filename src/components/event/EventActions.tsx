@@ -6,30 +6,12 @@ import { useState } from "react";
 export function EventActions({ title, start, end, location, url }: { title: string; start: string; end: string; location: string; url: string }) {
   const [copied, setCopied] = useState(false);
 
-  const ics = () => {
-    const f = (d: string) => new Date(d).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-    const esc = (s: string) => s.replace(/[\\,;]/g, (m) => "\\" + m).replace(/\n/g, "\\n");
-    const body = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//SOFIT//Afisha//RU",
-      "BEGIN:VEVENT",
-      `UID:${f(start)}-${encodeURIComponent(title)}@sofit.live`,
-      `DTSTAMP:${f(new Date().toISOString())}`,
-      `DTSTART:${f(start)}`,
-      `DTEND:${f(end)}`,
-      `SUMMARY:${esc(title)}`,
-      `LOCATION:${esc(location)}`,
-      `URL:${url}`,
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join("\r\n");
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([body], { type: "text/calendar;charset=utf-8" }));
-    a.download = "sofit-event.ics";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  };
+  // Google Calendar template link: works everywhere without downloading files.
+  const f = (d: string) => new Date(d).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const calendarUrl =
+    "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+    `&text=${encodeURIComponent(title)}&dates=${f(start)}/${f(end)}` +
+    `&location=${encodeURIComponent(location)}&details=${encodeURIComponent(url)}`;
 
   const share = async () => {
     const href = window.location.href;
@@ -41,16 +23,20 @@ export function EventActions({ title, start, end, location, url }: { title: stri
         /* cancelled */
       }
     }
-    await navigator.clipboard?.writeText(href);
+    try {
+      await navigator.clipboard?.writeText(href);
+    } catch {
+      return;
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className="flex flex-wrap gap-3">
-      <button type="button" onClick={ics} className="btn btn-ghost">
+      <a href={calendarUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
         В календарь
-      </button>
+      </a>
       <button type="button" onClick={share} className="btn btn-ghost" aria-live="polite">
         {copied ? "Ссылка скопирована" : "Поделиться"}
       </button>
