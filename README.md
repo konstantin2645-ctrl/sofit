@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SOFIT — сайт концертного агентства
 
-## Getting Started
+Полноценный продукт: публичный сайт с афишей, покупкой билетов, услугами, портфолио и контактами, плюс админ-панель с базой данных.
 
-First, run the development server:
+**Идея бренда.** SOFIT — «софит», сценический прожектор. Бренд — это сам свет: чёрная сцена, тёплый белый луч и театральные цветные фильтры (гели), которые закреплены за каждым концертом и проектом. На главном экране зал гаснет и луч прожектора следует за курсором.
+
+## Что внутри
+
+**Сайт**
+- Главная: видеофон со «следящим прожектором», афиша-программка с превью за курсором, манифест, который подсвечивается при прокрутке, интерактивная 3D-световая сцена (Three.js), горизонтальная лента проектов, услуги, партнёры, контакты.
+- Афиша `/concerts`: поиск, фильтры по артисту, городу, жанру и датам, быстрый выбор месяца. Фильтры живут в URL — ссылкой можно поделиться.
+- Страница концерта: категории билетов с остатками, оформление заказа (бронь с атомарным списанием мест), ссылка на внешнего оператора, добавление в календарь (.ics), карта площадки, галерея, похожие концерты, разметка `MusicEvent`.
+- Услуги со scrollytelling, портфолио с фильтром, галереей фото и видео и лайтбоксом, контакты с формой заявки и интерактивной картой.
+
+**Админ-панель** `/admin`
+- Обзор: продажи ближайших концертов, выручка, новые заявки.
+- Концерты, артисты, площадки, портфолио: создание, редактирование, удаление, валидация, автогенерация адреса страницы.
+- Медиатека: загрузка фото и видео перетаскиванием, выбор из библиотеки в любой форме.
+- Заявки: статусы, заметки, ответ письмом. Заказы билетов: смена статуса (отмена возвращает места в продажу), выгрузка в CSV.
+- Содержимое сайта: тексты главного экрана, фоновое видео, манифест и цифры, услуги, контакты, соцсети, партнёры.
+
+## Стек
+
+Next.js 16 (App Router, Cache Components, Turbopack), React 19, TypeScript, Tailwind CSS 4, PostgreSQL + Drizzle ORM, Zod, GSAP + ScrollTrigger, Lenis, Motion (Framer Motion), Three.js, Leaflet.
+
+## Быстрый старт
+
+### Docker (проще всего)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте http://localhost:3000. Админка: http://localhost:3000/admin, вход `admin@sofit.live` / `sofit-admin-2026`. Первый запуск занимает пару минут: контейнер применяет миграции, заполняет базу и собирает сайт.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Локально
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Нужны Node.js 20+ и PostgreSQL 14+.
 
-## Learn More
+```bash
+npm install
+cp .env.example .env        # укажите DATABASE_URL и AUTH_SECRET
+npm run setup               # миграции + демо-данные + первый администратор
+npm run dev                 # http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+Продакшн-сборка: `npm run build && npm start`. Сборка пререндерит страницы из базы, поэтому база должна быть доступна во время `build`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Переменные окружения
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Переменная | Назначение |
+| --- | --- |
+| `DATABASE_URL` | Строка подключения к PostgreSQL |
+| `AUTH_SECRET` | Ключ подписи сессий, не короче 32 символов (`openssl rand -base64 48`) |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Первый администратор, создаётся командой `npm run db:seed` |
+| `NEXT_PUBLIC_SITE_URL` | Боевой адрес сайта: canonical, sitemap, Open Graph |
+| `UPLOAD_DIR` | Папка для загруженных файлов (по умолчанию `./storage/uploads`) |
+| `INSECURE_COOKIES` | Только для запуска без HTTPS: разрешает cookie сессии по http |
 
-## Deploy on Vercel
+## Команды
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Команда | Что делает |
+| --- | --- |
+| `npm run dev` | Разработка |
+| `npm run build` / `npm start` | Продакшн-сборка и запуск |
+| `npm run db:generate` | Сгенерировать миграцию после изменения `src/db/schema.ts` |
+| `npm run db:migrate` | Применить миграции |
+| `npm run db:seed` | Демо-данные и администратор (повторный запуск безопасен) |
+| `npm run db:reset` | Очистить каталог и заново заполнить демо-данными |
+| `npm run media:generate` | Перегенерировать демо-фото и видео (Python 3, numpy, Pillow, ffmpeg) |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Структура
+
+```
+src/
+  app/(site)/        публичные страницы
+  app/admin/         админ-панель
+  app/api/           REST API: публичное (заявки, заказы, афиша) и /api/admin/*
+  app/uploads/       раздача загруженных файлов (с поддержкой Range для видео)
+  components/        интерфейс сайта и админки
+  db/                схема Drizzle и подключение
+  lib/               данные с кэшем, валидация, авторизация, форматирование
+  proxy.ts           защита /admin
+scripts/             миграции, сид, генератор медиа
+drizzle/             SQL-миграции
+```
+
+## API
+
+Публичное: `GET /api/events?q=&artist=&city=&genre=&from=&to=`, `POST /api/leads`, `POST /api/orders`.
+Админское (cookie-сессия): `/api/admin/{events,artists,venues,projects}` и `/{id}` — `GET/POST/PUT/DELETE`; `/api/admin/media` (multipart), `/api/admin/leads`, `/api/admin/orders`, `/api/admin/settings`, `/api/admin/stats`; `/api/auth/{login,logout,me}`.
+
+## Безопасность и производительность
+
+- Пароли — bcrypt, сессия — подписанный JWT в httpOnly-cookie `SameSite=Strict`, проверка Origin на изменяющих запросах, ограничение частоты для входа, заявок и заказов, ловушка для ботов в форме.
+- Строгий CSP, HSTS, `X-Frame-Options`, запрет индексации админки; загрузки проверяются по типу и размеру, путь к файлам защищён от выхода за пределы папки.
+- Страницы собираются в статическую оболочку с кэшем данных (`use cache` + теги); изменения в админке сбрасывают кэш сразу. Изображения — `next/image` (AVIF/WebP, адаптивные размеры), шрифты — свои, с разбивкой по алфавитам.
+- SEO: метаданные и Open Graph на каждой странице, `sitemap.xml`, `robots.txt`, JSON-LD `Organization` и `MusicEvent`.
+
+## Что подключить перед запуском в бой
+
+- **Оплата.** Заказ сейчас создаёт бронь и списывает места; статус «Оплачен» ставится в админке. Для онлайн-оплаты подключите эквайринг (ЮKassa, CloudPayments и т. п.) в `src/app/api/orders/route.ts`, либо укажите ссылку на билетного оператора в карточке концерта.
+- **Почта.** Письма с билетами и уведомления о заявках не отправляются — добавьте SMTP или сервис рассылок в обработчики заказов и заявок.
+- **Контент.** Все артисты, площадки, компании и цифры — вымышленные демо-данные. Фото и видео сгенерированы программно (`scripts/media/generate.py`) и свободны от прав; замените их своими через медиатеку.
+- **Хранилище.** Загрузки лежат на диске сервера. При нескольких инстансах вынесите их в S3-совместимое хранилище.

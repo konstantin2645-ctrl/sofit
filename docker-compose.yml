@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sofit
+      POSTGRES_PASSWORD: sofit
+      POSTGRES_DB: sofit
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sofit"]
+      interval: 3s
+      retries: 20
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://sofit:sofit@db:5432/sofit
+      AUTH_SECRET: ${AUTH_SECRET:-please-change-me-to-a-long-random-string-0123456789}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@sofit.live}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-sofit-admin-2026}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      UPLOAD_DIR: /app/storage/uploads
+      # remove when serving over HTTPS
+      INSECURE_COOKIES: "1"
+    volumes:
+      - uploads:/app/storage/uploads
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
+  uploads:
