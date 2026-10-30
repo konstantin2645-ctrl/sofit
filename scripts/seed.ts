@@ -6,13 +6,13 @@ import bcrypt from "bcryptjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { sql as dsql } from "drizzle-orm";
 import postgres from "postgres";
-import { pgOptions } from "../src/db/options";
+import { databaseUrl, pgOptions } from "../src/db/options";
 import * as s from "../src/db/schema";
 import { defaultContent } from "../src/lib/content";
 import { readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
-const client = postgres(process.env.DATABASE_URL!, pgOptions(process.env.DATABASE_URL!, 1));
+const client = postgres(databaseUrl()!, pgOptions(databaseUrl()!, 1));
 const db = drizzle(client, { schema: s });
 const reset = process.argv.includes("--reset");
 
