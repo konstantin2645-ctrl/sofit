@@ -13,7 +13,7 @@ export function EventCard({ e, priority = false }: { e: EventView; priority?: bo
     <article style={{ "--gel": GEL_COLORS[e.gel] } as React.CSSProperties}>
       <Link href={`/concerts/${e.slug}`} className="group block" aria-label={`${e.title}, ${z.day} ${z.monthGen}, ${e.venue?.city ?? ""}`}>
         <TiltCard>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-stage">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-stage sm:aspect-[4/5]">
             {e.cover && (
               <ViewTransition name={`event-cover-${e.slug}`}>
                 <Image
@@ -34,7 +34,7 @@ export function EventCard({ e, priority = false }: { e: EventView; priority?: bo
             />
             <div className="absolute left-5 right-5 top-5 flex items-start justify-between">
               <span className="flex items-baseline gap-2">
-                <span className="display text-[3.25rem] leading-none tabular-nums">{String(z.day).padStart(2, "0")}</span>
+                <span className="display text-[2.6rem] leading-none tabular-nums sm:text-[3.25rem]">{String(z.day).padStart(2, "0")}</span>
                 <span className="text-sm leading-tight text-paper/85">
                   {z.monthGen}
                   <br />

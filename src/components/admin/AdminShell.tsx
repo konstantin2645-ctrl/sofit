@@ -81,9 +81,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <p className="truncate text-sm">{me?.name ?? "…"}</p>
             <p className="truncate text-xs text-dim">{me?.email}</p>
             <div className="mt-3 flex gap-2">
-              <a href="/" target="_blank" className="flex-1 rounded-md border border-[var(--line-strong)] px-3 py-2 text-center text-xs hover:border-paper">
+              <Link href="/" className="flex-1 rounded-md border border-[var(--line-strong)] px-3 py-2 text-center text-xs hover:border-paper">
                 Открыть сайт
-              </a>
+              </Link>
               <button type="button" onClick={logout} className="flex-1 rounded-md border border-[var(--line-strong)] px-3 py-2 text-xs hover:border-danger hover:text-danger">
                 Выйти
               </button>

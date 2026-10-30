@@ -33,6 +33,7 @@ export function Footer({ contacts }: { contacts: ContactsContent }) {
                 <li><Link className="link-underline" href="/services">Услуги</Link></li>
                 <li><Link className="link-underline" href="/portfolio">Проекты</Link></li>
                 <li><Link className="link-underline" href="/contacts">Контакты</Link></li>
+                <li><Link className="link-underline text-dim" href="/admin">Вход для команды</Link></li>
               </ul>
             </div>
             <div>

@@ -1,6 +1,7 @@
 /* Entry point of the standalone SOFIT demo (single page, no server). */
 import "./api";
-import { Component, Suspense, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import "./loadThree";
+import { Component, Suspense, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { navigate, ParamsContext, useLocation } from "./router";
 import { store } from "./store";
@@ -83,11 +84,32 @@ function adminPage(path: string): [ReactNode, Record<string, string>] {
 }
 
 function DemoBar() {
+  const [hidden, setHidden] = useState(() => {
+    try {
+      return localStorage.getItem("sofit-demo-bar") === "hidden";
+    } catch {
+      return false;
+    }
+  });
+  if (hidden) return null;
   return (
-    <div className="fixed bottom-3 left-1/2 z-[90] flex max-w-[calc(100%-24px)] -translate-x-1/2 items-center gap-3 rounded-full border border-[var(--line-strong)] bg-black/80 py-1.5 pl-4 pr-1.5 text-xs text-paper/85 backdrop-blur">
-      <span className="truncate">Демо: изменения сохраняются в этом браузере</span>
-      <button type="button" className="shrink-0 rounded-full bg-paper px-3 py-1.5 font-semibold text-black hover:bg-spot" onClick={() => navigate("/admin")}>
-        Админка
+    <div className="fixed bottom-4 left-[var(--gutter)] z-40 hidden items-center gap-2 rounded-full border border-[var(--line-strong)] bg-black/80 py-1.5 pl-4 pr-1.5 text-xs text-paper/85 backdrop-blur md:flex">
+      <span>Демо-версия. Админ-панель:</span>
+      <button type="button" className="rounded-full bg-paper px-3 py-1.5 font-semibold text-black hover:bg-spot" onClick={() => navigate("/admin")}>
+        Открыть
+      </button>
+      <button
+        type="button"
+        aria-label="Скрыть подсказку"
+        className="grid h-7 w-7 place-items-center rounded-full text-dim hover:text-paper"
+        onClick={() => {
+          setHidden(true);
+          try {
+            localStorage.setItem("sofit-demo-bar", "hidden");
+          } catch {}
+        }}
+      >
+        ×
       </button>
     </div>
   );

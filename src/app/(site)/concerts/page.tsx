@@ -37,7 +37,7 @@ async function Results({ searchParams }: { searchParams: PageProps<"/concerts">[
           : "Ничего не нашлось"}
       </p>
       {list.length ? (
-        <div className="grid gap-x-6 gap-y-14 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-14 xl:grid-cols-3">
           {list.map((e, i) => (
             <EventCard key={e.id} e={e} priority={i < 3} />
           ))}

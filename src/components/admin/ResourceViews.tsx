@@ -212,9 +212,9 @@ export function ResourceEditor({ resource, id }: { resource: string; id: string 
               К списку
             </Link>
             {publicUrl && (
-              <a href={publicUrl} target="_blank" rel="noreferrer" className="a-btn">
+              <Link href={publicUrl} className="a-btn">
                 Открыть на сайте
-              </a>
+              </Link>
             )}
             <button type="submit" className="a-btn a-btn-primary" disabled={saving}>
               {saving ? "Сохраняем…" : isNew ? "Создать" : "Сохранить"}

@@ -41,6 +41,7 @@ const plugin = {
         code = code.replace(/\basync function\b/g, "function").replace(/await Promise\.all\(/g, "(").replace(/\bawait\s+/g, "");
       }
       if (a.path.endsWith("components/admin/client.ts")) code = code.replace(/window\.location\.href = `[^`]*`;/, 'window.__navigate("/admin/login");');
+      if (a.path.endsWith("components/home/LightField.tsx")) code = code.replace('await import("three")', "await window.__loadThree()");
       if (a.path.endsWith("components/admin/Media.tsx")) code = code.replace("new XMLHttpRequest()", "new window.__DemoXHR()");
       code = code.replace(/if \(!confirm\(/g, "if (!await window.__confirm(");
       if (a.path.endsWith("components/admin/Orders.tsx")) {
@@ -96,4 +97,5 @@ for (const d of ["fonts", "media"]) {
     fs.copyFileSync(path.join(root, "public", d, f), path.join(dist, d, f));
   }
 }
+for (const f of fs.readdirSync(path.join(demo, "variants"))) fs.copyFileSync(path.join(demo, "variants", f), path.join(dist, "media", f));
 console.log("index.html", (html.length / 1024).toFixed(0), "KB");

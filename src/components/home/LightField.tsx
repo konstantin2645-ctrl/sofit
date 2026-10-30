@@ -18,7 +18,12 @@ export function LightField({ className = "" }: { className?: string }) {
       async ([entry]) => {
         if (!entry.isIntersecting || disposed) return;
         io.disconnect();
-        const THREE = await import("three");
+        let THREE: typeof import("three");
+        try {
+          THREE = await import("three");
+        } catch {
+          return; // 3D is decorative: without it the section still reads fine
+        }
         if (disposed) return;
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -128,12 +133,13 @@ export function LightField({ className = "" }: { className?: string }) {
         vis.observe(el);
 
         let raf = 0;
-        const timer = new THREE.Timer();
+        let last = performance.now();
         const frame = () => {
           raf = requestAnimationFrame(frame);
           if (!visible) return;
-          timer.update();
-          const dt = Math.min(timer.getDelta(), 0.05);
+          const t = performance.now();
+          const dt = Math.min((t - last) / 1000, 0.05);
+          last = t;
           uniforms.uTime.value += reduce ? dt * 0.15 : dt;
           uniforms.uPulse.value *= 0.95;
           (uniforms.uPointer.value as InstanceType<typeof THREE.Vector2>).lerp(target, 0.08);

@@ -6,6 +6,7 @@ import { Suspense, ViewTransition } from "react";
 import { EventCard } from "@/components/concerts/EventCard";
 import { EventActions } from "@/components/event/EventActions";
 import { TicketPanel } from "@/components/event/TicketPanel";
+import { StickyBuy } from "@/components/event/StickyBuy";
 import { VenueMap } from "@/components/event/VenueMap";
 import { getEventBySlug, getEventSlugs, getUpcomingEvents } from "@/lib/data";
 import { currencyFor, formatDateLong, GEL_COLORS, zoned } from "@/lib/format";
@@ -272,6 +273,9 @@ async function EventContent({ params }: { params: PageProps<"/concerts/[slug]">[
         </section>
       )}
 
+      {e.status === "published" && e.tiers.length > 0 && (
+        <StickyBuy label={`${z.day} ${z.monthGen}, ${e.venue?.city ?? ""}`} price={`${new Intl.NumberFormat("ru-RU").format(minPrice)} ${currency}`} />
+      )}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
     </article>
   );
