@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { SITE_URL } from "@/lib/site";
 
-const site = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const site = SITE_URL;
 
 export const metadata: Metadata = {
   metadataBase: new URL(site),

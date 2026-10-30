@@ -3,6 +3,7 @@ import { Footer } from "@/components/site/Footer";
 import { SmoothScroll } from "@/components/site/SmoothScroll";
 import { getContent } from "@/lib/data";
 import { Suspense } from "react";
+import { SITE_URL } from "@/lib/site";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const content = await getContent();
@@ -11,7 +12,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     "@type": "Organization",
     name: "SOFIT",
     legalName: "ООО «Софит Лайв»",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    url: SITE_URL,
     logo: "/icon.svg",
     email: content.contacts.email,
     telephone: content.contacts.phone,

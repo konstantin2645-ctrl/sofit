@@ -10,8 +10,9 @@ import { StickyBuy } from "@/components/event/StickyBuy";
 import { VenueMap } from "@/components/event/VenueMap";
 import { getEventBySlug, getEventSlugs, getUpcomingEvents } from "@/lib/data";
 import { currencyFor, formatDateLong, GEL_COLORS, zoned } from "@/lib/format";
+import { SITE_URL } from "@/lib/site";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const SITE = SITE_URL;
 
 export async function generateStaticParams() {
   const slugs = await getEventSlugs();
