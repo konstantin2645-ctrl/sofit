@@ -87,6 +87,7 @@ html.lenis body {
 }
 
 body {
+  color: var(--color-paper);
   font-family: var(--font-sans);
   font-size: 1.0625rem;
   line-height: 1.55;
